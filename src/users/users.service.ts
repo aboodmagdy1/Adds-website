@@ -16,13 +16,11 @@ export class UsersService {
   }
 
   async create(bodyData: CreateUserDto): Promise<User> {
-    // TODO: Hash Password
     return this.userRepository.create({ ...bodyData, role: 'user' });
   }
 
   async update(filter: any, bodyData: UpdateUserDto): Promise<User> {
-    // TODO: Hash Password
-    return this.userRepository.findOneAndUpdate(filter, { ...bodyData });
+    return await this.userRepository.findOneAndUpdate(filter, { ...bodyData });
   }
 
   async delete(filter: any) {

@@ -22,9 +22,13 @@ export class UserRepository {
     userFilterQuery: FilterQuery<User>,
     user: Partial<User>,
   ): Promise<User> {
-    return this.userModel.findOneAndUpdate(userFilterQuery, user, {
-      new: true,
-    });
+    const existingUser = await this.userModel.findOne(userFilterQuery);
+    if (existingUser) {
+      Object.assign(existingUser, user);
+      return existingUser.save();
+    } else {
+      return null;
+    }
   }
   async findOneAndDelete(userFilterQuery: FilterQuery<User>): Promise<User> {
     return this.userModel.findOneAndDelete(userFilterQuery);
