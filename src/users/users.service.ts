@@ -16,7 +16,7 @@ export class UsersService {
   }
 
   async create(bodyData: CreateUserDto): Promise<User> {
-    return this.userRepository.create({ ...bodyData, role: 'user' });
+    return this.userRepository.create(bodyData);
   }
 
   async update(filter: any, bodyData: UpdateUserDto): Promise<User> {
