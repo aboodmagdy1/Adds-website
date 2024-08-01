@@ -7,7 +7,7 @@ import { FilterQuery, Model } from 'mongoose';
 export class UserRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async findOne(userFilterQuery: FilterQuery<User>): Promise<User> {
+  async findOne(userFilterQuery: FilterQuery<User>): Promise<UserDocument> {
     return this.userModel.findOne(userFilterQuery);
   }
   async findAll(userFilterQuery: FilterQuery<User>): Promise<User[]> {
