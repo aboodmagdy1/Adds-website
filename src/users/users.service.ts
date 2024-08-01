@@ -1,0 +1,31 @@
+import { Injectable } from '@nestjs/common';
+import { UserRepository } from './user.repository';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { User } from './user.schema';
+import { UpdateUserDto } from './dtos/update-user.dto';
+
+@Injectable()
+export class UsersService {
+  constructor(private userRepository: UserRepository) {}
+
+  async getUserById(userId: string) {
+    return this.userRepository.findOne({ _id: userId });
+  }
+  async getUsers(filter: any) {
+    return this.userRepository.findAll(filter);
+  }
+
+  async create(bodyData: CreateUserDto): Promise<User> {
+    // TODO: Hash Password
+    return this.userRepository.create({ ...bodyData, role: 'user' });
+  }
+
+  async update(filter: any, bodyData: UpdateUserDto): Promise<User> {
+    // TODO: Hash Password
+    return this.userRepository.findOneAndUpdate(filter, { ...bodyData });
+  }
+
+  async delete(filter: any) {
+    return this.userRepository.findOneAndDelete(filter);
+  }
+}
