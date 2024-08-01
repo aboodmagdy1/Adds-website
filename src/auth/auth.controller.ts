@@ -3,6 +3,7 @@ import { SigninDto } from './dtos/signin.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './guards/auth.guard';
 import { Request } from 'express';
+import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,9 +14,8 @@ export class AuthController {
     return await this.authService.signin(bodyData);
   }
 
-  @UseGuards(AuthGuard)
-  @Get('any')
-  async getTest(@Req() req: Request) {
-    return 'Hello World';
+  @Post('signup')
+  async signup(@Body() bodyData: CreateUserDto) {
+    return await this.authService.signup(bodyData);
   }
 }

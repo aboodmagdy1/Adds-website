@@ -26,4 +26,13 @@ export class AuthService {
       auth_token: token,
     };
   }
+
+  async signup(signupBody: CreateUserDto) {
+    const user = await this.userRepostory.findOne({ email: signupBody.email });
+    if (user) {
+      throw new BadRequestException('User already exists');
+    }
+    const newUser = await this.userRepostory.create(signupBody);
+    return newUser;
+  }
 }
