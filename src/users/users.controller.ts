@@ -6,20 +6,29 @@ import {
   Param,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
+import { Role, Roles } from 'src/auth/decorators/roles.decorator';
+import { Request } from 'express';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private userService: UsersService) {}
+
   @Post()
-  async register(@Body() bodyData: CreateUserDto) {
+  async register(@Body() bodyData: CreateUserDto, @Req() req: Request) {
     const newUser = await this.userService.create(bodyData);
     return newUser;
   }
   @Get('')
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
   async getUsers() {
     const user = await this.userService.getUsers({});
     return user;

@@ -10,7 +10,7 @@ import {
 import { SigninDto } from './dtos/signin.dto';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './guards/auth.guard';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 
@@ -41,5 +41,12 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() bodyData: CreateUserDto) {
     return await this.authService.signup(bodyData);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('verify')
+  async verifyUser(@Req() req: Request) {
+    return; // if the user is verified, the request will be send 200 status code
+    //  else the authGuard will throw unOtriggered exception
   }
 }

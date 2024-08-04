@@ -5,6 +5,7 @@ import { User, UserDocument } from 'src/users/user.schema';
 import * as bcrypt from 'bcrypt';
 import { SigninDto } from './dtos/signin.dto';
 import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
 @Injectable()
 export class AuthService {
   constructor(

@@ -29,10 +29,10 @@ export class AuthGuard implements CanActivate {
       });
 
       request['user'] = payload.sub;
+      return true;
     } catch (e) {
       throw new UnauthorizedException();
     }
-    return true;
   }
 
   // JWT in Headers
