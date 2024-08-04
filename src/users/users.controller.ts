@@ -16,8 +16,11 @@ import { Role, Roles } from 'src/auth/decorators/roles.decorator';
 import { Request } from 'express';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { UserDto } from './dtos/user.dto';
 
 @Controller('users')
+@Serialize(UserDto)
 export class UsersController {
   constructor(private userService: UsersService) {}
 
