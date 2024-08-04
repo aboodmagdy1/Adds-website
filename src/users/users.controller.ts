@@ -21,6 +21,8 @@ import { UserDto } from './dtos/user.dto';
 
 @Controller('users')
 @Serialize(UserDto)
+@Roles(Role.Admin)
+@UseGuards(AuthGuard, RolesGuard)
 export class UsersController {
   constructor(private userService: UsersService) {}
 
@@ -30,8 +32,6 @@ export class UsersController {
     return newUser;
   }
   @Get('')
-  @Roles(Role.Admin)
-  @UseGuards(AuthGuard, RolesGuard)
   async getUsers() {
     const user = await this.userService.getUsers({});
     return user;
