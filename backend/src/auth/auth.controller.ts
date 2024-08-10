@@ -13,6 +13,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { Request, Response } from 'express';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { ConfigService } from '@nestjs/config';
+import { LocalAuthGuard } from './guards/local.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -22,9 +23,11 @@ export class AuthController {
   ) {}
 
   @Post('signin')
+  @UseGuards(LocalAuthGuard) // local strategy
   async signin(
     @Body() bodyData: SigninDto,
     @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
   ) {
     const token: { auth_token: string } =
       await this.authService.signin(bodyData);
@@ -43,10 +46,10 @@ export class AuthController {
     return await this.authService.signup(bodyData);
   }
 
-  @UseGuards(AuthGuard)
   @Get('verify')
+  @UseGuards(AuthGuard)
   async verifyUser(@Req() req: Request) {
-    return; // if the user is verified, the request will be send 200 status code
+    return req.user; // if the user is verified, the request will be send 200 status code
     //  else the authGuard will throw unOtriggered exception
   }
 }

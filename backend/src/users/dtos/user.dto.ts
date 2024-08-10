@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { Types } from 'mongoose';
 import { Role } from 'src/auth/decorators/roles.decorator';
 
 export class UserDto {
@@ -10,4 +11,6 @@ export class UserDto {
   phone: string;
   @Expose()
   roles: Role[];
+  @Expose()
+  _id: Types.ObjectId;
 }

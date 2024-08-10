@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { UserRepository } from 'src/users/user.repository';
 import { User, UserDocument } from 'src/users/user.schema';
@@ -6,6 +10,8 @@ import * as bcrypt from 'bcrypt';
 import { SigninDto } from './dtos/signin.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { UserDto } from 'src/users/dtos/user.dto';
+import { Types } from 'mongoose';
 @Injectable()
 export class AuthService {
   constructor(
@@ -13,14 +19,25 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signin(signinBody: SigninDto): Promise<{ auth_token: string }> {
-    const user = await this.userRepostory.findOne({ email: signinBody.email });
-    // validate user
-    if (!user || !(await bcrypt.compare(signinBody.password, user.password))) {
-      throw new BadRequestException('Invalid credentials');
+  async validateUser(email: string, password: string): Promise<Types.ObjectId> {
+    try {
+      const user = await this.userRepostory.findOne({ email });
+      // validate user
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        throw new UnauthorizedException();
+      }
+      return user._id;
+    } catch (err) {
+      throw new UnauthorizedException('vredentials are not valid');
     }
+  }
+  async signin(signinBody: SigninDto): Promise<{ auth_token: string }> {
+    const userId = await this.validateUser(
+      signinBody.email,
+      signinBody.password,
+    );
     //create token
-    const payload = { sub: user._id };
+    const payload = { sub: userId };
     const token = await this.jwtService.signAsync(payload);
     //send response
     return {
