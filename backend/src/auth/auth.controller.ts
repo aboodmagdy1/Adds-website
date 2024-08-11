@@ -7,9 +7,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { SigninDto } from './dtos/signin.dto';
 import { AuthService } from './auth.service';
-import { AuthGuard } from './guards/auth.guard';
 import { Request, Response } from 'express';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { ConfigService } from '@nestjs/config';
@@ -17,6 +15,7 @@ import { LocalAuthGuard } from './guards/local.guard';
 import { Types } from 'mongoose';
 import { currentUser } from './decorators/current-user.decorator';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import { JwtRefreshAuthGuard } from './guards/refresh-jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -28,11 +27,19 @@ export class AuthController {
   @Post('signin')
   @UseGuards(LocalAuthGuard) // local strategy
   async signin(
-    @Body() bodyData: SigninDto,
     @Res({ passthrough: true }) res: Response,
     @currentUser() userId: Types.ObjectId,
   ) {
     return this.authService.signin(userId, res);
+  }
+
+  @Post('refresh')
+  @UseGuards(JwtRefreshAuthGuard)
+  async refreshToken(
+    @Res({ passthrough: true }) res: Response,
+    @currentUser() userId: Types.ObjectId,
+  ) {
+    await this.authService.signin(userId, res);
   }
 
   @Post('signup')

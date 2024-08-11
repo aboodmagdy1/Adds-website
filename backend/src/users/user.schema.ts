@@ -18,6 +18,9 @@ export class User {
   @Prop()
   phone: string;
 
+  @Prop()
+  refreshToken: string;
+
   @Prop({ type: [String], enum: Role, default: [Role.User] })
   roles: Role[];
 }
