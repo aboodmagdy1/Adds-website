@@ -14,6 +14,9 @@ import { Request, Response } from 'express';
 import { CreateUserDto } from 'src/users/dtos/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { LocalAuthGuard } from './guards/local.guard';
+import { Types } from 'mongoose';
+import { currentUser } from './decorators/current-user.decorator';
+import { JwtAuthGuard } from './guards/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -27,18 +30,9 @@ export class AuthController {
   async signin(
     @Body() bodyData: SigninDto,
     @Res({ passthrough: true }) res: Response,
-    @Req() req: Request,
+    @currentUser() userId: Types.ObjectId,
   ) {
-    const token: { auth_token: string } =
-      await this.authService.signin(bodyData);
-    res.cookie('auth_token', token.auth_token, {
-      httpOnly: true,
-      secure:
-        this.configService.get<string>('NODE_ENV') == 'production'
-          ? true
-          : false,
-      maxAge: 1000 * 60 * 60 * 24 * 1,
-    });
+    return this.authService.signin(userId, res);
   }
 
   @Post('signup')
@@ -47,7 +41,7 @@ export class AuthController {
   }
 
   @Get('verify')
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   async verifyUser(@Req() req: Request) {
     return req.user; // if the user is verified, the request will be send 200 status code
     //  else the authGuard will throw unOtriggered exception
