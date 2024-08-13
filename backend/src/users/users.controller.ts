@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Req,
-  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
@@ -18,11 +17,11 @@ import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
 @Controller('users')
 @Serialize(UserDto)
-@Roles(Role.Admin)
-@UseGuards(AuthGuard, RolesGuard)
+@Auth(Role.Admin)
 export class UsersController {
   constructor(private userService: UsersService) {}
 
