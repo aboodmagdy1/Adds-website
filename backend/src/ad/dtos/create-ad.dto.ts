@@ -11,8 +11,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ADType, Ownership } from '../ad.schema';
+import { User } from 'src/users/user.schema';
 
-export class AdressDto {
+export class AddressDto {
   @IsString()
   @IsNotEmpty()
   gov: string;
@@ -38,9 +39,9 @@ export class CreateAdDto {
   space: number;
 
   @ValidateNested()
-  @Type(() => AdressDto)
+  @Type(() => AddressDto)
   @IsNotEmpty()
-  address: AdressDto;
+  address: AddressDto;
 
   @IsEnum(ADType)
   @IsNotEmpty()
@@ -52,7 +53,7 @@ export class CreateAdDto {
 
   @IsMongoId()
   @IsNotEmpty()
-  owner: string;
+  owner: User;
 
   @IsUrl({}, { each: true })
   @IsOptional()
