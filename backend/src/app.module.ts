@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UploadModule } from './upload/upload.module';
+import { AdModule } from './ad/ad.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UploadModule } from './upload/upload.module';
     AuthModule,
     UsersModule,
     UploadModule,
+    AdModule,
   ],
 })
 export class AppModule {}
