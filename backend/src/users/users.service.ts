@@ -12,7 +12,7 @@ export class UsersService {
     return this.userRepository.findOne({ _id: userId });
   }
   async getUsers(filter: any) {
-    return this.userRepository.findAll(filter);
+    return this.userRepository.find(filter);
   }
 
   async create(bodyData: CreateUserDto): Promise<User> {

@@ -28,4 +28,7 @@ export class AdDto {
   owner: string;
   @Expose()
   imgUrls: string[];
+
+  @Expose()
+  approved: boolean;
 }

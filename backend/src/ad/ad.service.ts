@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAdDto } from './dtos/create-ad.dto';
 import { AdRepository } from './ad.repository';
-import { FilterQuery } from 'mongoose';
 
 @Injectable()
 export class AdService {
@@ -11,7 +10,7 @@ export class AdService {
   }
 
   async getAds(filter: any) {
-    return this.adRepository.findAll(filter);
+    return this.adRepository.find(filter);
   }
 
   async getAd(filter: any) {
