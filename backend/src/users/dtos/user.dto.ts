@@ -1,8 +1,11 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { Types } from 'mongoose';
 import { Role } from 'src/auth/decorators/roles.decorator';
 
 export class UserDto {
+  @Expose()
+  @Transform(({ obj }) => obj._id.toString())
+  _id: string;
   @Expose()
   username: string;
   @Expose()

@@ -11,6 +11,10 @@ class AddressDto {
 
 export class AdDto {
   @Expose()
+  @Transform(({ obj }) => obj._id.toString())
+  _id: string;
+
+  @Expose()
   title: string;
   @Expose()
   price: number;
