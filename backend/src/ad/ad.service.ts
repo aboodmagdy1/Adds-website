@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateAdDto } from './dtos/create-ad.dto';
 import { AdRepository } from './ad.repository';
 
@@ -14,6 +14,11 @@ export class AdService {
   }
 
   async getAd(filter: any) {
-    return this.adRepository.findOne(filter);
+    const ad = await this.adRepository.findOne(filter);
+    if (ad === null) {
+      throw new BadRequestException(`Ad not found`);
+    } else {
+      return ad;
+    }
   }
 }

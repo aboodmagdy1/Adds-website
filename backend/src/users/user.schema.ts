@@ -23,6 +23,9 @@ export class User {
 
   @Prop({ type: [String], enum: Role, default: [Role.User] })
   roles: Role[];
+
+  @Prop({ default: false })
+  approved: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

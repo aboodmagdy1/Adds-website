@@ -11,6 +11,7 @@ export class UserDto {
   phone: string;
   @Expose()
   roles: Role[];
+
   @Expose()
-  _id: Types.ObjectId;
+  approved: boolean;
 }
