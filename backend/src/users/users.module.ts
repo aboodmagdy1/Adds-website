@@ -6,6 +6,7 @@ import { UsersService } from './users.service';
 import { UserRepository } from './user.repository';
 
 import * as bcrypt from 'bcrypt';
+import { EmailModule } from 'src/utils/email/email.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import * as bcrypt from 'bcrypt';
         },
       },
     ]),
+    EmailModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UserRepository],

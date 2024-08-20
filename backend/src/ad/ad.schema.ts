@@ -71,5 +71,3 @@ export class AD {
 }
 
 export const ADSchema = SchemaFactory.createForClass(AD);
-
-ADSchema.index({ owner: 1, _id: 1 }); // compund index onf (owner,document id )

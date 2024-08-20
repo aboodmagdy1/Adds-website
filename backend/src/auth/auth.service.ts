@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
+import { EmailParams, EmailService } from 'src/utils/email/email.service';
 
 export type TokenPayload = {
   sub: Types.ObjectId;
@@ -21,6 +22,7 @@ export class AuthService {
     private userRepostory: UserRepository,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private emailService: EmailService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<Types.ObjectId> {
@@ -91,7 +93,20 @@ export class AuthService {
     if (user) {
       throw new BadRequestException('User already exists');
     }
+
     const newUser = await this.userRepostory.create(signupBody);
+    const emailParams: EmailParams = {
+      recipientMail: newUser.email,
+      subject: 'Welcom email',
+      message: `Hello ${newUser.username}, welcome to our platform`,
+    };
+
+    try {
+      await this.emailService.sendEmail(emailParams);
+    } catch (err) {
+      console.error('Failed to send welcome email:', err);
+    }
+
     return newUser;
   }
 }
