@@ -28,7 +28,7 @@ export class AdDto {
   @Expose()
   ownershipState: Ownership;
   @Expose()
-  @Transform(({ value }) => value._id.toString())
+  @Transform(({ obj }) => obj.owner.toString())
   owner: string;
   @Expose()
   imgUrls: string[];

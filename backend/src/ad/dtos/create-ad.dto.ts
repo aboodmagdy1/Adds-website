@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsEnum,
   IsMongoId,
@@ -28,11 +28,13 @@ export class CreateAdDto {
   @IsNotEmpty()
   title: string;
 
+  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @Min(0)
   @IsNotEmpty()
   price: number;
 
+  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   @Min(0)
   @IsNotEmpty()
@@ -50,10 +52,6 @@ export class CreateAdDto {
   @IsEnum(Ownership)
   @IsNotEmpty()
   ownershipState: Ownership;
-
-  @IsMongoId()
-  @IsNotEmpty()
-  owner: User;
 
   @IsUrl({}, { each: true })
   @IsOptional()

@@ -1,5 +1,5 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 import { User } from 'src/users/user.schema';
 
@@ -61,7 +61,7 @@ export class AD {
     ref: User.name,
     required: true,
   })
-  owner: User;
+  owner: Types.ObjectId;
 
   @Prop()
   imgUrls: string[];
@@ -71,3 +71,5 @@ export class AD {
 }
 
 export const ADSchema = SchemaFactory.createForClass(AD);
+
+ADSchema.index({ owner: 1, _id: 1 }); // compund index onf (owner,document id )
