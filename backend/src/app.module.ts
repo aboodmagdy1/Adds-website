@@ -4,10 +4,10 @@ import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UploadModule } from './upload/upload.module';
 import { AdModule } from './ad/ad.module';
 import { EmailModule } from './utils/email/email.module';
 import { EmailService } from './utils/email/email.service';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -27,9 +27,9 @@ import { EmailService } from './utils/email/email.service';
     }),
     AuthModule,
     UsersModule,
-    UploadModule,
     AdModule,
     EmailModule,
+    CloudinaryModule,
   ],
   providers: [EmailService],
 })
