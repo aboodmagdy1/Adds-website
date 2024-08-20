@@ -32,7 +32,7 @@ export class AuthService {
       }
       return user._id;
     } catch (err) {
-      throw new UnauthorizedException('vredentials are not valid');
+      throw new UnauthorizedException('credentials are not valid');
     }
   }
 

@@ -21,8 +21,8 @@ export class User {
   @Prop()
   refreshToken: string;
 
-  @Prop({ type: [String], enum: Role, default: [Role.User] })
-  roles: Role[];
+  @Prop({ type: String, enum: Role, default: Role.User })
+  role: Role;
 
   @Prop({ default: false })
   approved: boolean;

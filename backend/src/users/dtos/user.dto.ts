@@ -13,7 +13,7 @@ export class UserDto {
   @Expose()
   phone: string;
   @Expose()
-  roles: Role[];
+  role: Role;
 
   @Expose()
   approved: boolean;

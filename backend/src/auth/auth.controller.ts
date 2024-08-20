@@ -19,10 +19,7 @@ import { JwtRefreshAuthGuard } from './guards/refresh-jwt.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private configService: ConfigService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @Post('signin')
   @UseGuards(LocalAuthGuard) // local strategy
