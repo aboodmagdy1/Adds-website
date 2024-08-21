@@ -11,6 +11,7 @@ import { Response } from 'express';
 import { Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { EmailParams, EmailService } from 'src/utils/email/email.service';
+import { User, UserDocument } from 'src/users/user.schema';
 
 export type TokenPayload = {
   sub: Types.ObjectId;
@@ -24,6 +25,33 @@ export class AuthService {
     private configService: ConfigService,
     private emailService: EmailService,
   ) {}
+
+  private async createAndSendVerificationEmail(user: UserDocument) {
+    // create verification Token
+    const verificationToken = await this.jwtService.signAsync(
+      { sub: user._id },
+      { expiresIn: '24h' },
+    );
+    user.verificationToken = verificationToken;
+    await user.save();
+
+    // send verification Email
+    const verificationUrl = `${this.configService.getOrThrow<string>(
+      this.configService.get<string>('NODE_ENV') == 'production'
+        ? 'PRODUCTION_URL'
+        : 'DEVELOPMENT_URL',
+    )}/api/auth/verify-email?token=${verificationToken}`;
+    const emailParams: EmailParams = {
+      recipientMail: user.email,
+      subject: 'Email Verification 📩',
+      message: `Hello ${user.username}, welcome to our platform \n Please verify your email by clicking the link below before 24h \n : <p><a href="${verificationUrl}">Verify Your Email</a></p> `,
+    };
+    try {
+      await this.emailService.sendEmail(emailParams);
+    } catch (err) {
+      console.error('Failed to send welcome email:', err);
+    }
+  }
 
   async validateUser(email: string, password: string): Promise<Types.ObjectId> {
     try {
@@ -97,30 +125,8 @@ export class AuthService {
     // create user
     const newUser = await this.userRepostory.create(signupBody);
 
-    // create verification Token
-    const verificationToken = await this.jwtService.signAsync(
-      { sub: newUser._id },
-      { expiresIn: '24h' },
-    );
-    newUser.verificationToken = verificationToken;
-    await newUser.save();
-
-    // send verification Email
-    const verificationUrl = `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
-    const emailParams: EmailParams = {
-      recipientMail: newUser.email,
-      subject: 'Email Verification 📩',
-      message: `Hello ${newUser.username}, welcome to our platform \n
-      Please verify your email by clicking the link below before 24h \n
-       : <p><a href="${verificationUrl}">Verify Your Email</a></p> `,
-    };
-
-    try {
-      await this.emailService.sendEmail(emailParams);
-    } catch (err) {
-      console.error('Failed to send welcome email:', err);
-    }
-
+    // send verification email
+    await this.createAndSendVerificationEmail(newUser);
     return newUser;
   }
 
@@ -157,25 +163,9 @@ export class AuthService {
     if (user.isVerified) {
       throw new BadRequestException('already verified');
     }
-    // if not verified send verification email
-    const verificationToken = await this.jwtService.signAsync(
-      { sub: user._id },
-      { expiresIn: '24h' },
-    );
-    user.verificationToken = verificationToken;
-    await user.save();
 
-    // send verification Email
-    const verificationUrl = `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
-    const emailParams: EmailParams = {
-      recipientMail: user.email,
-      subject: 'Email Verification 📩',
-      message: `Hello ${user.username}, welcome to our platform \n
-      Please verify your email by clicking the link below before 24h \n
-       : <p><a style="color:red;" href="${verificationUrl}">Verify Your Email</a></p> `,
-    };
-
-    await this.emailService.sendEmail(emailParams);
+    // send verification email
+    await this.createAndSendVerificationEmail(user);
     return { message: 'Email verification send' };
   }
 
