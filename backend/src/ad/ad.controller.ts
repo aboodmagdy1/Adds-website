@@ -56,9 +56,16 @@ export class AdController {
     return newAd;
   }
 
+  // for public users
   @Get('')
   async getAds() {
-    return await this.adService.getAds({});
+    return await this.adService.getAds({ approved: true });
+  }
+
+  @Get('/my')
+  @Auth(Role.Owner, Role.Admin, Role.Assistant)
+  async getMyAds(@currentUser() userId: Types.ObjectId) {
+    return await this.adService.getAds({ owner: userId });
   }
 
   @Get(':id')
