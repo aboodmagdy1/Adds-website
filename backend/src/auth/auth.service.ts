@@ -94,11 +94,25 @@ export class AuthService {
       throw new BadRequestException('User already exists');
     }
 
+    // create user
     const newUser = await this.userRepostory.create(signupBody);
+
+    // create verification Token
+    const verificationToken = await this.jwtService.signAsync(
+      { sub: newUser._id },
+      { expiresIn: '24h' },
+    );
+    newUser.verificationToken = verificationToken;
+    await newUser.save();
+
+    // send verification Email
+    const verificationUrl = `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
     const emailParams: EmailParams = {
       recipientMail: newUser.email,
-      subject: 'Welcom email',
-      message: `Hello ${newUser.username}, welcome to our platform`,
+      subject: 'Email Verification 📩',
+      message: `Hello ${newUser.username}, welcome to our platform \n
+      Please verify your email by clicking the link below before 24h \n
+       : <p><a href="${verificationUrl}">Verify Your Email</a></p> `,
     };
 
     try {
@@ -108,5 +122,69 @@ export class AuthService {
     }
 
     return newUser;
+  }
+
+  async verifyEmail(token: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+      const user = await this.userRepostory.findOne({
+        verificationToken: token,
+      });
+      if (!user) {
+        throw new BadRequestException('Invalid or expired verification token');
+      }
+      user.verificationToken = null;
+      user.isVerified = true;
+      await user.save();
+
+      return { message: 'Email successfully verified' };
+    } catch (error: Error | any) {
+      if (error.name === 'TokenExpiredError') {
+        throw new BadRequestException('Verification token has expired');
+      } else {
+        console.log(error.stack);
+        throw new BadRequestException('Invalid verification token');
+      }
+    }
+  }
+  async resendVerification(email: string) {
+    // find user
+    const user = await this.userRepostory.findOne({ email: email });
+    // check if user already verified
+    if (!user) {
+      throw new BadRequestException('User not found ');
+    }
+    if (user.isVerified) {
+      throw new BadRequestException('already verified');
+    }
+    // if not verified send verification email
+    const verificationToken = await this.jwtService.signAsync(
+      { sub: user._id },
+      { expiresIn: '24h' },
+    );
+    user.verificationToken = verificationToken;
+    await user.save();
+
+    // send verification Email
+    const verificationUrl = `http://localhost:3000/api/auth/verify-email?token=${verificationToken}`;
+    const emailParams: EmailParams = {
+      recipientMail: user.email,
+      subject: 'Email Verification 📩',
+      message: `Hello ${user.username}, welcome to our platform \n
+      Please verify your email by clicking the link below before 24h \n
+       : <p><a style="color:red;" href="${verificationUrl}">Verify Your Email</a></p> `,
+    };
+
+    await this.emailService.sendEmail(emailParams);
+    return { message: 'Email verification send' };
+  }
+
+  // get logged user
+  async getMe(userId: Types.ObjectId) {
+    const user = await this.userRepostory.findOne({ _id: userId });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    return user;
   }
 }

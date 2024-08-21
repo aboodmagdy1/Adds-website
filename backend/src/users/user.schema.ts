@@ -12,6 +12,11 @@ export class User {
   @Prop({ unique: true })
   email: string;
 
+  @Prop({ default: false })
+  isVerified: boolean;
+
+  @Prop({ unique: true, sparse: true }) // sparse: true allows multiple null values (delete the documents from the index table if this field is null)
+  verificationToken: string;
   @Prop()
   password: string;
 

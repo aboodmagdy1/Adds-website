@@ -36,7 +36,11 @@ export class UsersService {
         `User with email ${bodyData.email} already exist`,
       );
     } else {
-      const newuUser = await this.userRepository.create(bodyData);
+      // if the admin create the user this mean this one is approved
+      const newuUser = await this.userRepository.create({
+        ...bodyData,
+        approved: true,
+      });
       const emailParams: EmailParams = {
         recipientMail: newuUser.email,
         subject: 'Welcom email',
@@ -64,6 +68,8 @@ export class UsersService {
     return this.userRepository.findOneAndDelete(filter);
   }
 
+  // approve or reject user
+  // user if approved after verification
   async approve(filter: FilterQuery<User>, approvalBody: ApprovalDto) {
     const user = await this.userRepository.findOneAndUpdate(filter, {
       role: approvalBody.role,

@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -44,10 +45,17 @@ export class AuthController {
     return await this.authService.signup(bodyData);
   }
 
-  @Get('verify')
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    return await this.authService.verifyEmail(token);
+  }
+  @Post('resend-verification')
+  async resendVerification(@Body('email') email: string) {
+    return await this.authService.resendVerification(email);
+  }
+  @Get('me')
   @UseGuards(JwtAuthGuard)
-  async verifyUser(@Req() req: Request) {
-    return req.user; // if the user is verified, the request will be send 200 status code
-    //  else the authGuard will throw unOtriggered exception
+  async verifyUser(@currentUser() userId: Types.ObjectId) {
+    return await this.authService.getMe(userId);
   }
 }

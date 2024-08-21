@@ -14,7 +14,10 @@ export class UserDto {
   phone: string;
   @Expose()
   role: Role;
-
+  @Expose()
+  isVerified: boolean;
+  @Expose()
+  verificationToken: string;
   @Expose()
   approved: boolean;
 }
