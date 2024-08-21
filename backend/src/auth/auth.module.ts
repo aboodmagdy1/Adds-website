@@ -8,6 +8,7 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JWTStrategy } from './strategies/jwt.strategy';
 import { JWTRefreshStrategy } from './strategies/refresh-token.strategy';
 import { EmailModule } from 'src/utils/email/email.module';
+import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { EmailModule } from 'src/utils/email/email.module';
       inject: [ConfigService],
     }),
     EmailModule,
+    SharedModule,
   ],
   controllers: [AuthController],
   providers: [

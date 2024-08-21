@@ -12,6 +12,7 @@ import { Types } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { EmailParams, EmailService } from 'src/utils/email/email.service';
 import { User, UserDocument } from 'src/users/user.schema';
+import { EmailVerificationService } from 'src/shared/emaliVerification.service';
 
 export type TokenPayload = {
   sub: Types.ObjectId;
@@ -24,34 +25,8 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private emailService: EmailService,
+    private emailVerficationService: EmailVerificationService,
   ) {}
-
-  private async createAndSendVerificationEmail(user: UserDocument) {
-    // create verification Token
-    const verificationToken = await this.jwtService.signAsync(
-      { sub: user._id },
-      { expiresIn: '24h' },
-    );
-    user.verificationToken = verificationToken;
-    await user.save();
-
-    // send verification Email
-    const verificationUrl = `${this.configService.getOrThrow<string>(
-      this.configService.get<string>('NODE_ENV') == 'production'
-        ? 'PRODUCTION_URL'
-        : 'DEVELOPMENT_URL',
-    )}/api/auth/verify-email?token=${verificationToken}`;
-    const emailParams: EmailParams = {
-      recipientMail: user.email,
-      subject: 'Email Verification 📩',
-      message: `Hello ${user.username}, welcome to our platform \n Please verify your email by clicking the link below before 24h \n : <p><a href="${verificationUrl}">Verify Your Email</a></p> `,
-    };
-    try {
-      await this.emailService.sendEmail(emailParams);
-    } catch (err) {
-      console.error('Failed to send welcome email:', err);
-    }
-  }
 
   async validateUser(email: string, password: string): Promise<Types.ObjectId> {
     try {
@@ -124,9 +99,8 @@ export class AuthService {
 
     // create user
     const newUser = await this.userRepostory.create(signupBody);
-
     // send verification email
-    await this.createAndSendVerificationEmail(newUser);
+    await this.emailVerficationService.createAndSendVerificationEmail(newUser);
     return newUser;
   }
 
@@ -165,7 +139,7 @@ export class AuthService {
     }
 
     // send verification email
-    await this.createAndSendVerificationEmail(user);
+    await this.emailVerficationService.createAndSendVerificationEmail(user);
     return { message: 'Email verification send' };
   }
 

@@ -8,6 +8,7 @@ import { AdModule } from './ad/ad.module';
 import { EmailModule } from './utils/email/email.module';
 import { EmailService } from './utils/email/email.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     AdModule,
     EmailModule,
     CloudinaryModule,
+    SharedModule,
   ],
   providers: [EmailService],
 })
