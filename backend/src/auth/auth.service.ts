@@ -113,7 +113,7 @@ export class AuthService {
       if (!user) {
         throw new BadRequestException('Invalid or expired verification token');
       }
-      user.verificationToken = null;
+      user.verificationToken = '';
       user.isVerified = true;
       await user.save();
 

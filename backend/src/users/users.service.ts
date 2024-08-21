@@ -7,12 +7,14 @@ import { FilterQuery, Mongoose, Types } from 'mongoose';
 import { Role } from 'src/auth/decorators/roles.decorator';
 import { EmailParams, EmailService } from 'src/utils/email/email.service';
 import { use } from 'passport';
+import { EmailVerificationService } from 'src/shared/emaliVerification.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private userRepository: UserRepository,
     private emailService: EmailService,
+    private emailVerificationService: EmailVerificationService,
   ) {}
 
   async getUserById(userId: string): Promise<User> {
@@ -41,17 +43,10 @@ export class UsersService {
         ...bodyData,
         approved: true,
       });
-      const emailParams: EmailParams = {
-        recipientMail: newuUser.email,
-        subject: 'Welcom email',
-        message: `Hello ${newuUser.username}, welcome to our platform`,
-      };
-
-      try {
-        await this.emailService.sendEmail(emailParams);
-      } catch (err) {
-        console.error('Failed to send welcome email:', err);
-      }
+      // send email Verification
+      await this.emailVerificationService.createAndSendVerificationEmail(
+        newuUser,
+      );
 
       return newuUser;
     }

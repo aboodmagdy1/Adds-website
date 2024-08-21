@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UserDocument } from 'src/users/user.schema';
 import { EmailParams, EmailService } from 'src/utils/email/email.service';
-
+import { v4 as uuidv4 } from 'uuid';
 @Injectable()
 export class EmailVerificationService {
   constructor(
@@ -14,7 +14,7 @@ export class EmailVerificationService {
   async createAndSendVerificationEmail(user: UserDocument) {
     // create verification Token
     const verificationToken = await this.jwtService.signAsync(
-      { sub: user },
+      { sub: user._id },
       { expiresIn: '24h' },
     );
     user.verificationToken = verificationToken;

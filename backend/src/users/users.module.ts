@@ -7,6 +7,8 @@ import { UserRepository } from './user.repository';
 
 import * as bcrypt from 'bcrypt';
 import { EmailModule } from 'src/utils/email/email.module';
+import { EmailVerificationService } from 'src/shared/emaliVerification.service';
+import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { EmailModule } from 'src/utils/email/email.module';
       },
     ]),
     EmailModule,
+    SharedModule,
   ],
   controllers: [UsersController],
   providers: [UsersService, UserRepository],
