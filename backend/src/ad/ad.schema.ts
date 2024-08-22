@@ -67,7 +67,7 @@ export class AD {
   imgUrls: string[];
 
   @Prop({ default: false })
-  approved: boolean;
+  isApproved: boolean;
 }
 
 export const ADSchema = SchemaFactory.createForClass(AD);

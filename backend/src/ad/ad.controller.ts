@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -59,7 +61,7 @@ export class AdController {
   // for public users
   @Get('')
   async getAds() {
-    return await this.adService.getAds({ approved: true });
+    return await this.adService.getAds({ isApproved: true });
   }
 
   @Get('/my')
@@ -71,6 +73,13 @@ export class AdController {
   @Get(':id')
   async getAd(@Param('id') id: string) {
     return await this.adService.getAd({ _id: id });
+  }
+
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Patch(':id/approve')
+  @Auth(Role.Admin)
+  async approveAd(@Param('id') id: string) {
+    return this.adService.approveAd({ _id: id });
   }
 
   @Patch(':id')

@@ -68,7 +68,7 @@ export class UsersService {
   async approve(filter: FilterQuery<User>, approvalBody: ApprovalDto) {
     const user = await this.userRepository.findOneAndUpdate(filter, {
       role: approvalBody.role,
-      isApproved: approvalBody.approve,
+      isApproved: approvalBody.isApproved,
     });
     if (!user) {
       throw new BadRequestException('User not found');

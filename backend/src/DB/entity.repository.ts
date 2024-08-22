@@ -28,7 +28,8 @@ export abstract class EntityRepository<T extends Document> {
   }
 
   async create(createEntityData: Partial<T>): Promise<T> {
-    return this.entityModel.create(createEntityData);
+    const createdEntity = new this.entityModel(createEntityData);
+    return createdEntity.save({});
   }
 
   async findOneAndUpdate(

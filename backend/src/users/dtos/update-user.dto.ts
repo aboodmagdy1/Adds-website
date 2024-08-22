@@ -8,7 +8,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {}
 export class ApprovalDto {
   @IsBoolean()
   @IsNotEmpty()
-  approve: boolean;
+  isApproved: boolean;
   @IsString()
   @IsNotEmpty()
   role: Role;

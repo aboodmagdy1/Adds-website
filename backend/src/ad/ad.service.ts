@@ -10,12 +10,16 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { CloudinaryResponse } from 'src/cloudinary/cloudinary.response';
 import { ADDocument } from './ad.schema';
 import { UpdateAdDto } from './dtos/ad-update';
+import { UserRepository } from 'src/users/user.repository';
+import { EmailParams, EmailService } from 'src/utils/email/email.service';
 
 @Injectable()
 export class AdService {
   constructor(
     private adRepository: AdRepository,
     private cloudinaryService: CloudinaryService,
+    private userRepository: UserRepository,
+    private emailService: EmailService,
   ) {}
 
   private async ExtractUploadedFilesUrl(
@@ -87,5 +91,43 @@ export class AdService {
     });
 
     return updatedAd;
+  }
+  async delete(filter: FilterQuery<ADDocument>) {
+    return this.adRepository.findOneAndDelete(filter);
+  }
+
+  // reject or approve an existing document for admin
+  async approveAd(filter: FilterQuery<ADDocument>): Promise<ADDocument> {
+    try {
+      const ad = await this.adRepository.findOne(filter);
+      if (!ad) {
+        throw new BadRequestException('Ad not found');
+      }
+
+      const owner = await this.userRepository.findOne({ _id: ad.owner });
+      if (!owner) {
+        throw new BadRequestException('Owner not found');
+      }
+      if (!owner.isVerified || !owner.isApproved) {
+        throw new BadRequestException('Owner is not approved or verified');
+      }
+
+      ad.isApproved = !ad.isApproved; // toggle the approval status
+      await ad.save();
+
+      const emailParams: EmailParams = {
+        recipientMail: owner.email,
+        subject: 'Ad Approval',
+        message: ad.isApproved
+          ? 'Your ad has been approved successfully, now people can see it.'
+          : 'Your ad has been unapproved, it is no longer visible.',
+      };
+      await this.emailService.sendEmail(emailParams);
+
+      return ad;
+    } catch (error) {
+      // Add custom error handling or logging if needed
+      throw error;
+    }
   }
 }

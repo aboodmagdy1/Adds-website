@@ -1,6 +1,7 @@
 import { Expose, Transform, Type } from 'class-transformer';
 import { ADType, Ownership } from '../ad.schema';
 import { User } from 'src/users/user.schema';
+import { Types } from 'mongoose';
 
 class AddressDto {
   @Expose()
@@ -13,7 +14,6 @@ export class AdDto {
   @Expose()
   @Transform(({ obj }) => obj._id.toString())
   _id: string;
-
   @Expose()
   title: string;
   @Expose()
@@ -34,5 +34,5 @@ export class AdDto {
   imgUrls: string[];
 
   @Expose()
-  approved: boolean;
+  isApproved: boolean;
 }
