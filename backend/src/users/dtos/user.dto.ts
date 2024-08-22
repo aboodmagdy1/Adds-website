@@ -19,5 +19,5 @@ export class UserDto {
   @Expose()
   verificationToken: string;
   @Expose()
-  approved: boolean;
+  isApproved: boolean;
 }

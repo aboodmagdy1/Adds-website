@@ -31,7 +31,7 @@ export class User {
   role: Role;
 
   @Prop({ default: false })
-  approved: boolean;
+  isApproved: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -41,7 +41,7 @@ export class UsersService {
       // if the admin create the user this mean this one is approved
       const newuUser = await this.userRepository.create({
         ...bodyData,
-        approved: true,
+        isApproved: true,
       });
       // send email Verification
       await this.emailVerificationService.createAndSendVerificationEmail(
@@ -64,11 +64,11 @@ export class UsersService {
   }
 
   // approve or reject user
-  // user if approved after verification
+  // user is approved after verification
   async approve(filter: FilterQuery<User>, approvalBody: ApprovalDto) {
     const user = await this.userRepository.findOneAndUpdate(filter, {
       role: approvalBody.role,
-      approved: approvalBody.approved,
+      isApproved: approvalBody.approve,
     });
     if (!user) {
       throw new BadRequestException('User not found');
@@ -77,7 +77,7 @@ export class UsersService {
     const emailParams: EmailParams = {
       recipientMail: user.email,
       subject: 'Approval Emails',
-      message: ` ${user.username}, ${user.approved ? `Your Successfully Approved` : 'sorry Your are rejected '} as ${user.role} in our platform`,
+      message: ` ${user.username}, ${user.isApproved ? `Your Successfully Approved` : 'sorry Your are rejected '} as ${user.role} in our platform`,
     };
 
     try {

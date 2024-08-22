@@ -90,6 +90,28 @@ export class AuthService {
       auth_token: accessToken,
     };
   }
+  // I will need it to remove cookies in the Dev mode
+  async logout(userId: Types.ObjectId, res: Response) {
+    // 1) invalidate refresh token
+    await this.userRepostory.findOneAndUpdate(
+      { _id: userId },
+      {
+        refreshToken: null,
+      },
+    );
+
+    // 2) remove refresh token from cookies
+    res.clearCookie('refresh_token', {
+      httpOnly: true,
+      secure: this.configService.get<string>('NODE_ENV') == 'production',
+    });
+
+    // 3) remove access token from cookies
+    res.clearCookie('auth_token', {
+      httpOnly: true,
+      secure: this.configService.get<string>('NODE_ENV') == 'production',
+    });
+  }
 
   async signup(signupBody: CreateUserDto) {
     const user = await this.userRepostory.findOne({ email: signupBody.email });

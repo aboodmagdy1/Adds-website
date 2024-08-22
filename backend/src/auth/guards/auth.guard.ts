@@ -21,7 +21,9 @@ export class AuthGuard implements CanActivate {
     const token = this.extractTokenFromCookies(request);
     // extract date form token
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(
+        'You need to be authenticated to access this resource',
+      );
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {

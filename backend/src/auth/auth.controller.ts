@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Post,
   Query,
   Req,
@@ -18,6 +20,9 @@ import { currentUser } from './decorators/current-user.decorator';
 import { JwtAuthGuard } from './guards/jwt.guard';
 import { JwtRefreshAuthGuard } from './guards/refresh-jwt.guard';
 
+import { Auth } from './decorators/auth.decorator';
+import { AuthGuard } from './guards/auth.guard';
+
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -29,6 +34,16 @@ export class AuthController {
     @currentUser() userId: Types.ObjectId,
   ) {
     return this.authService.signin(userId, res);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('logout')
+  @Auth()
+  async logout(
+    @Res({ passthrough: true }) res: Response,
+    @currentUser() userId: Types.ObjectId,
+  ) {
+    return await this.authService.logout(userId, res);
   }
 
   @Post('refresh')
@@ -54,8 +69,8 @@ export class AuthController {
     return await this.authService.resendVerification(email);
   }
   @Get('me')
-  @UseGuards(JwtAuthGuard)
-  async verifyUser(@currentUser() userId: Types.ObjectId) {
+  @Auth()
+  async myProfile(@currentUser() userId: Types.ObjectId) {
     return await this.authService.getMe(userId);
   }
 }
