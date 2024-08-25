@@ -68,6 +68,9 @@ export class AD {
 
   @Prop({ default: false })
   isApproved: boolean;
+
+  @Prop({ default: false })
+  isPayed: boolean;
 }
 
 export const ADSchema = SchemaFactory.createForClass(AD);

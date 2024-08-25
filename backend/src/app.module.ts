@@ -9,9 +9,15 @@ import { EmailModule } from './utils/email/email.module';
 import { EmailService } from './utils/email/email.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { SharedModule } from './shared/shared.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../client'),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -32,6 +38,7 @@ import { SharedModule } from './shared/shared.module';
     EmailModule,
     CloudinaryModule,
     SharedModule,
+    StripeModule,
   ],
   providers: [EmailService],
 })
