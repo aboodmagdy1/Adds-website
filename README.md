@@ -27,7 +27,7 @@ Api To facilitate the process of Sellling the lands and real states. where the g
 
 ## API Documentation
 
-The API documentation is available via Swagger. You can view the documentation by visiting:
+The API documentation is available via Swagger. You can view the documentation by runs the app and visiting:
 
 - [Development Environment](http://localhost:3000/api)
 
@@ -36,8 +36,6 @@ The API documentation is available via Swagger. You can view the documentation b
 ```bash
 $ npm install
 ```
-
-s
 
 ## Environment Variables
 
