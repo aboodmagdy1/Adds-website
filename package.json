@@ -10,11 +10,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/multer": "^1.4.11"
-  },
-  "dependencies": {
-    "@nestjs/cli": "^10.4.4"
-  }
+  "license": "ISC"
 }
