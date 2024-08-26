@@ -2,6 +2,18 @@
   "compilerOptions": {
     "module": "commonjs",
     "typeRoots": ["./node_modules/@types"],
+    "types": [
+      "node",
+      "express",
+      "multer",
+      "bcrypt",
+      "cookie-parser",
+      "jest",
+      "passport-jwt",
+      "passport-local",
+      "supertest",
+      "uuid"
+    ],
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
