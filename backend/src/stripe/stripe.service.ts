@@ -11,6 +11,10 @@ export class StripeService {
   }
 
   async createCheckoutSession(bodyData: AdPaymentDto) {
+    const base_url =
+      process.env.NODE_ENV === 'production'
+        ? process.env.CLIENT_BASE_URL_PROD
+        : process.env.CLIENT_BASE_URL_DEV;
     const session = await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -27,8 +31,8 @@ export class StripeService {
         },
       ],
       mode: 'payment',
-      success_url: 'http://localhost:3000/success.html',
-      cancel_url: 'http://localhost:3000/cancel.html',
+      success_url: `${base_url}/success.html`,
+      cancel_url: `${base_url}/cancel.html`,
       metadata: {
         adId: bodyData._id,
         ownerId: bodyData.owner,
