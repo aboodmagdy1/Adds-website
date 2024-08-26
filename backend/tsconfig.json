@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
+    "strict": true,
     "module": "commonjs",
+    "typeRoots": ["./node_modules/@types"],
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -15,7 +17,7 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
+    "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": false
   }
 }

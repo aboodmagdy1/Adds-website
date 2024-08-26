@@ -99,7 +99,7 @@ export class EmailService {
         `Email sent to ${recipientMail} with subject Successfully`,
       );
     } catch (err) {
-      this.logger.error('Error sending email', err.stack);
+      this.logger.error('Error sending email', err);
       throw new InternalServerErrorException('Error sending email');
     }
   }

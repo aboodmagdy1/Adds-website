@@ -9,23 +9,18 @@ import {
   Patch,
   Post,
   UploadedFiles,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateAdDto } from './dtos/create-ad.dto';
 import { AdService } from './ad.service';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { AdDto } from './dtos/ad-dto';
-import { Role, Roles } from 'src/auth/decorators/roles.decorator';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { AuthGuard } from '@nestjs/passport';
+import { Role } from 'src/auth/decorators/roles.decorator';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { currentUser } from 'src/auth/decorators/current-user.decorator';
 import { Types } from 'mongoose';
-import { User } from 'src/users/user.schema';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UpdateAdDto } from './dtos/ad-update';
-
 @Controller('ads')
 @Serialize(AdDto)
 export class AdController {
