@@ -23,7 +23,7 @@ export class AdService {
   ) {}
 
   private async ExtractUploadedFilesUrl(
-    files: Express.Multer.File[],
+    files: Express.Multer.File[] | unknown[],
   ): Promise<string[]> {
     const uploadedFiles: CloudinaryResponse[] = await Promise.all(
       files.map((file) => this.cloudinaryService.uploadFile(file)),
@@ -33,7 +33,7 @@ export class AdService {
   }
   async createAd(
     createDto: CreateAdDto,
-    files: Express.Multer.File[],
+    files: Express.Multer.File[] | unknown[],
     userid: Types.ObjectId,
   ) {
     if (!files || files.length === 0) {
@@ -63,7 +63,7 @@ export class AdService {
   async update(
     filter: FilterQuery<ADDocument>,
     updateDto: UpdateAdDto,
-    files: Express.Multer.File[],
+    files: Express.Multer.File[] | unknown[],
     userId: Types.ObjectId,
   ) {
     //1) find the ad

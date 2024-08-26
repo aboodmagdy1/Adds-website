@@ -43,7 +43,7 @@ export class AdController {
   async createAd(
     @Body() createBody: CreateAdDto,
     @currentUser() userId: Types.ObjectId,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles() files: Express.Multer.File[] | unknown[],
   ) {
     const newAd = await this.adService.createAd(
       { ...createBody },
@@ -94,7 +94,7 @@ export class AdController {
   async updateAd(
     @Param('id') id: string,
     @Body() updateAdBody: UpdateAdDto,
-    @UploadedFiles() files: Express.Multer.File[],
+    @UploadedFiles() files: Express.Multer.File[] | unknown[],
     @currentUser() userId: Types.ObjectId,
   ) {
     return await this.adService.update(
