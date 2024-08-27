@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 
 import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -12,6 +17,8 @@ import { SharedModule } from './shared/shared.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StripeModule } from './stripe/stripe.module';
+import { rawBodyMiddleware } from './middlewares/stripeRasBody.middleware';
+import { JsonBodyMiddleware } from './middlewares/jsonBoyd.middleware';
 
 @Module({
   imports: [
@@ -42,4 +49,11 @@ import { StripeModule } from './stripe/stripe.module';
   ],
   providers: [EmailService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JsonBodyMiddleware)
+      .exclude({ path: '/stripe/webhook', method: RequestMethod.POST })
+      .forRoutes('*');
+  }
+}

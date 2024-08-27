@@ -1,11 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { rawBodyMiddleware } from './middlewares/stripeRasBody.middleware';
+import * as cookeiParser from 'cookie-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
+  app.use('/api/stripe/webhook', rawBodyMiddleware);
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
@@ -13,7 +15,7 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-  app.use(cookieParser());
+  app.use(cookeiParser());
   app.setGlobalPrefix('api');
 
   // swagger

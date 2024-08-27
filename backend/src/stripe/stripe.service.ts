@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Request } from 'express';
 import { AdPaymentDto } from 'src/ad/dtos/ad-dto';
 import Stripe from 'stripe';
@@ -29,5 +29,40 @@ export class StripeService {
     });
 
     return { url: session.url };
+  }
+
+  async handleWebhook(body: Buffer, signature: string) {
+    let event: Stripe.Event;
+    try {
+      // TODO: verify the signature
+      // the problem is here
+      event = this.stripe.webhooks.constructEvent(
+        body,
+        signature,
+        process.env.WEBHOOK_SECRET,
+      );
+    } catch (err) {
+      throw new BadRequestException('Webhook Error: ', err.message);
+    }
+
+    // Handle the event
+    switch (event.type) {
+      case 'invoice.payment_succeeded':
+        await this.handleSubscriptionPaymentSucceeded(
+          event.data.object as Stripe.Invoice,
+        );
+        break;
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+    return { received: true };
+  }
+
+  private async handleSubscriptionPaymentSucceeded(
+    subscription: Stripe.Invoice,
+  ) {
+    console.log('subscription received');
+    // TODO: approve user and conver it to owner
+    // TODO:send email notification to owner
   }
 }
