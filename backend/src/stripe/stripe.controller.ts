@@ -7,7 +7,7 @@ import { Request } from 'express';
 export class StripeController {
   constructor(private stripeService: StripeService) {}
   @Post('create-checkout-session')
-  async createCheckoutSession(@Body() Body: AdPaymentDto, @Req() req: Request) {
-    return this.stripeService.createCheckoutSession(Body, req);
+  async createCheckoutSession(@Req() req: Request) {
+    return this.stripeService.createCheckoutSession(req);
   }
 }

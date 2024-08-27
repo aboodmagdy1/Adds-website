@@ -11,28 +11,20 @@ export class StripeService {
     });
   }
 
-  async createCheckoutSession(bodyData: AdPaymentDto, req: Request) {
+  async createCheckoutSession(req: Request) {
     const session = await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
+      mode: 'subscription',
       line_items: [
         {
-          price_data: {
-            currency: 'egp',
-            product_data: {
-              name: bodyData.title,
-              images: [bodyData.imgUrls[0]],
-            },
-            unit_amount: bodyData.price * 100,
-          },
+          price: 'price_1Prby4B7xuh8j3Y0teHGL0Z5',
           quantity: 1,
         },
       ],
-      mode: 'payment',
       success_url: `${req.protocol}://${req.get('host')}/success.html`,
       cancel_url: `${req.protocol}://${req.get('host')}/cancel.html`,
       metadata: {
-        adId: bodyData._id,
-        ownerId: bodyData.owner,
+        userId: req.user as string,
       },
     });
 
