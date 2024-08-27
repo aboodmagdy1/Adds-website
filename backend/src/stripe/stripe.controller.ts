@@ -3,7 +3,7 @@ import { StripeService } from './stripe.service';
 import { AdPaymentDto } from 'src/ad/dtos/ad-dto';
 import { Request } from 'express';
 import Stripe from 'stripe';
-import { RequestWithRawBody } from 'src/middlewares/stripeRasBody.middleware';
+// import { RequestWithRawBody } from 'src/middlewares/stripeRasBody.middleware';
 
 @Controller('stripe')
 export class StripeController {
@@ -22,7 +22,7 @@ export class StripeController {
   // https://stackoverflow.com/questions/54346465/access-raw-body-of-stripe-webhook-in-nest-js
   @Post('webhook')
   async handleWebhook(
-    @Req() req: RequestWithRawBody,
+    @Req() req: Request,
     @Headers('stripe-signature') signature: string,
   ) {
     try {
