@@ -4,7 +4,9 @@ import * as express from 'express';
 declare global {
   namespace Express {
     // This will ensure that the basic Express types are available globally
-    export type Request = express.Request;
+    export interface Request {
+      rawBody?: Buffer;
+    }
     export type Response = express.Response;
     export type NextFunction = express.NextFunction;
     export type Application = express.Application;
