@@ -6,12 +6,12 @@ export interface RequestWithRawBody extends Request {
 }
 
 export function rawBodyMiddleware(
-  req: RequestWithRawBody,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) {
   if (req.originalUrl === '/api/stripe/webhook') {
-    RawBody(req as any, {
+    RawBody(req as RequestWithRawBody, {
       encoding: true,
       length: req.headers['content-length'],
     })
