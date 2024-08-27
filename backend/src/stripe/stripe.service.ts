@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Request } from 'express';
 import { AdPaymentDto } from 'src/ad/dtos/ad-dto';
 import Stripe from 'stripe';
 @Injectable()
@@ -10,11 +11,7 @@ export class StripeService {
     });
   }
 
-  async createCheckoutSession(bodyData: AdPaymentDto) {
-    const base_url =
-      process.env.NODE_ENV === 'production'
-        ? process.env.CLIENT_BASE_URL_PROD
-        : process.env.CLIENT_BASE_URL_DEV;
+  async createCheckoutSession(bodyData: AdPaymentDto, req: Request) {
     const session = await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -31,8 +28,8 @@ export class StripeService {
         },
       ],
       mode: 'payment',
-      success_url: `${base_url}/success.html`,
-      cancel_url: `${base_url}/cancel.html`,
+      success_url: `${req.protocol}://${req.get('host')}/success.html`,
+      cancel_url: `${req.protocol}://${req.get('host')}/cancel.html`,
       metadata: {
         adId: bodyData._id,
         ownerId: bodyData.owner,

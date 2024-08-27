@@ -1,6 +1,7 @@
 const button = document.querySelector("button");
 const baseUrl = window.location.protocol + "//" + window.location.host;
 button.addEventListener("click", () => {
+  console.log(baseUrl);
   fetch(`${baseUrl}/api/stripe/create-checkout-session`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
