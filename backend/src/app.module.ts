@@ -47,7 +47,6 @@ import { JsonBodyMiddleware } from './middlewares/jsonBoyd.middleware';
     SharedModule,
     StripeModule,
   ],
-  providers: [EmailService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

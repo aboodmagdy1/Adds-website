@@ -4,10 +4,8 @@ import { User, UserSchema } from './user.schema';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserRepository } from './user.repository';
-
 import * as bcrypt from 'bcrypt';
 import { EmailModule } from 'src/utils/email/email.module';
-import { EmailVerificationService } from 'src/shared/emaliVerification.service';
 import { SharedModule } from 'src/shared/shared.module';
 
 @Module({
@@ -33,6 +31,6 @@ import { SharedModule } from 'src/shared/shared.module';
   ],
   controllers: [UsersController],
   providers: [UsersService, UserRepository],
-  exports: [UserRepository],
+  exports: [UserRepository, UsersService],
 })
 export class UsersModule {}

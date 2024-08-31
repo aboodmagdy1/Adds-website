@@ -3,7 +3,7 @@ import { StripeService } from './stripe.service';
 import { AdPaymentDto } from 'src/ad/dtos/ad-dto';
 import { Request } from 'express';
 import Stripe from 'stripe';
-// import { RequestWithRawBody } from 'src/middlewares/stripeRasBody.middleware';
+import { Auth } from 'src/auth/decorators/auth.decorator';
 
 @Controller('stripe')
 export class StripeController {
@@ -15,6 +15,7 @@ export class StripeController {
     });
   }
   @Post('create-checkout-session')
+  @Auth()
   async createCheckoutSession(@Req() req: Request) {
     return this.stripeService.createCheckoutSession(req);
   }
