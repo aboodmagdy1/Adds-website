@@ -33,11 +33,16 @@ export class AuthService {
       const user = await this.userRepostory.findOne({ email });
       // validate user
       if (!user || !(await bcrypt.compare(password, user.password))) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('invalid credentials');
       }
+      // to insure that the owner will be verified when making any action
+      if (!user.isVerified) {
+        throw new UnauthorizedException('Verify your email ');
+      }
+
       return user._id;
     } catch (err) {
-      throw new UnauthorizedException('credentials are not valid');
+      throw new UnauthorizedException(err.message);
     }
   }
 
@@ -123,7 +128,7 @@ export class AuthService {
     const newUser = await this.userRepostory.create(signupBody);
     // send verification email
     await this.emailVerficationService.createAndSendVerificationEmail(newUser);
-    return newUser;
+    return { message: 'Verification email sent' };
   }
 
   async verifyEmail(token: string) {
