@@ -6,7 +6,7 @@ import { UsersService } from './users.service';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
 import { EmailModule } from 'src/utils/email/email.module';
-import { SharedModule } from 'src/shared/shared.module';
+import { EmailVerificationService } from 'src/shared/emaliVerification.service';
 
 @Module({
   imports: [
@@ -27,10 +27,9 @@ import { SharedModule } from 'src/shared/shared.module';
       },
     ]),
     EmailModule,
-    SharedModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, UserRepository],
+  providers: [UsersService, UserRepository, EmailVerificationService],
   exports: [UserRepository, UsersService],
 })
 export class UsersModule {}

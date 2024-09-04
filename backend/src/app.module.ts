@@ -13,12 +13,12 @@ import { AdModule } from './ad/ad.module';
 import { EmailModule } from './utils/email/email.module';
 import { EmailService } from './utils/email/email.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { SharedModule } from './shared/shared.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StripeModule } from './stripe/stripe.module';
 import { rawBodyMiddleware } from './middlewares/stripeRasBody.middleware';
 import { JsonBodyMiddleware } from './middlewares/jsonBoyd.middleware';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -39,12 +39,12 @@ import { JsonBodyMiddleware } from './middlewares/jsonBoyd.middleware';
       }),
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     AdModule,
     EmailModule,
     CloudinaryModule,
-    SharedModule,
     StripeModule,
   ],
 })

@@ -61,8 +61,6 @@ export class StripeService {
   }
 
   private async handleSubscriptionPaymentSucceeded(invoice: Stripe.Invoice) {
-    console.log(invoice.customer_email);
-    // customer_email
     // approve user and conver it to owner
     const user = await this.userService.approve(
       { email: invoice.customer_email },
@@ -79,5 +77,10 @@ export class StripeService {
     await this.emailService.sendEmail(emailParams);
 
     return true;
+  }
+  private async handleSubscriptionFailed(invoice: Stripe.Invoice) {
+    // TODO: make owner not upproved
+    //
+    // send email to owner
   }
 }
