@@ -36,6 +36,14 @@ export class AdService {
     files: Express.Multer.File[] | unknown[],
     userid: Types.ObjectId,
   ) {
+    const user = await this.userRepository.findOne({ _id: userid });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    if (!user.isVerified || !user.isApproved) {
+      throw new BadRequestException('User is not verified or approved');
+    }
+
     if (!files || files.length === 0) {
       throw new BadRequestException('At least one image is required');
     }
