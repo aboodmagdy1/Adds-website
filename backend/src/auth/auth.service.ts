@@ -149,7 +149,6 @@ export class AuthService {
       if (error.name === 'TokenExpiredError') {
         throw new BadRequestException('Verification token has expired');
       } else {
-        console.log(error.stack);
         throw new BadRequestException('Invalid verification token');
       }
     }
