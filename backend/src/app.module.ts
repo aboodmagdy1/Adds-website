@@ -11,14 +11,11 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AdModule } from './ad/ad.module';
 import { EmailModule } from './utils/email/email.module';
-import { EmailService } from './utils/email/email.service';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StripeModule } from './stripe/stripe.module';
-import { rawBodyMiddleware } from './middlewares/stripeRasBody.middleware';
 import { JsonBodyMiddleware } from './middlewares/jsonBoyd.middleware';
-import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -39,7 +36,6 @@ import { ScheduleModule } from '@nestjs/schedule';
       }),
       inject: [ConfigService],
     }),
-    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     AdModule,

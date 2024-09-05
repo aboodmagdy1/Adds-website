@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { User } from './user.schema';
+import { User, UserDocument } from './user.schema';
 import { ApprovalDto, UpdateUserDto } from './dtos/update-user.dto';
 import { FilterQuery, Mongoose, Types } from 'mongoose';
 import { Role } from 'src/auth/decorators/roles.decorator';
@@ -17,7 +17,7 @@ export class UsersService {
     private emailVerificationService: EmailVerificationService,
   ) {}
 
-  async getUserById(userId: string): Promise<User> {
+  async getUserById(userId: string): Promise<UserDocument> {
     const user = await this.userRepository.findOne({ _id: userId });
     if (!user) {
       throw new BadRequestException(`User with id ${userId} not found`);

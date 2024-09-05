@@ -138,4 +138,16 @@ export class AdService {
       throw error;
     }
   }
+
+  async disableAdsForUser(userId: string) {
+    await this.adRepository.updateMany(
+      {
+        owner: userId,
+      },
+      {
+        isApproved: false,
+        ownerSubscriptionExpired: true,
+      },
+    );
+  }
 }

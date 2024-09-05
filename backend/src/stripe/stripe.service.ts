@@ -1,7 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Request } from 'express';
+import { waitForDebugger } from 'inspector';
+import { AdService } from 'src/ad/ad.service';
 import { AdPaymentDto } from 'src/ad/dtos/ad-dto';
 import { Role } from 'src/auth/decorators/roles.decorator';
+import { UserRepository } from 'src/users/user.repository';
 import { UsersService } from 'src/users/users.service';
 import { EmailParams, EmailService } from 'src/utils/email/email.service';
 import Stripe from 'stripe';
@@ -9,16 +12,33 @@ import Stripe from 'stripe';
 export class StripeService {
   private stripe: Stripe;
   constructor(
+    private userRepository: UserRepository,
     private userService: UsersService,
     private emailService: EmailService,
+    private adService: AdService,
   ) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2024-06-20',
     });
   }
-
+  // we need customer id to track subscription and so on
   async createCheckoutSession(req: Request) {
+    const user = await this.userRepository.findOne({ _id: req.user as string });
+    let customerId = user.stripeCustomerId;
+
+    // create customer id in not eixst
+    if (!customerId) {
+      const customer = await this.stripe.customers.create({
+        email: user.email,
+        name: user.username,
+      });
+      user.stripeCustomerId = customer.id;
+      await user.save();
+
+      customerId = customer.id;
+    }
     const session = await this.stripe.checkout.sessions.create({
+      customer: customerId,
       payment_method_types: ['card'],
       mode: 'subscription',
       line_items: [
@@ -54,6 +74,10 @@ export class StripeService {
           event.data.object as Stripe.Invoice,
         );
         break;
+      case 'customer.subscription.deleted':
+        await this.handleSubscriptionEnd(
+          event.data.object as Stripe.Subscription,
+        );
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
@@ -75,12 +99,30 @@ export class StripeService {
     };
 
     await this.emailService.sendEmail(emailParams);
-
     return true;
   }
-  private async handleSubscriptionFailed(invoice: Stripe.Invoice) {
-    // TODO: make owner not upproved
-    //
-    // send email to owner
+  private async handleSubscriptionEnd(subscription: Stripe.Subscription) {
+    // 1) change role and disapprove user
+    const user = await this.userRepository.findOne({
+      stripeCustomerId: subscription.customer as string,
+    });
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    user.isApproved = false;
+    user.role = Role.Guest;
+    await user.save();
+
+    // 2) diasble all ads fo this user
+    await this.adService.disableAdsForUser(user.id);
+
+    //3) send email to owner
+    const emailParams: EmailParams = {
+      recipientMail: user.email,
+      subject: 'Subscription Ended',
+      message:
+        'Your subscription has ended, and your account and ads have been disabled.',
+    };
+    await this.emailService.sendEmail(emailParams);
   }
 }

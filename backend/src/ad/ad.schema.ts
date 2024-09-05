@@ -70,7 +70,7 @@ export class AD {
   isApproved: boolean;
 
   @Prop({ default: false })
-  isPayed: boolean;
+  ownerSubscriptionExpired: boolean;
 }
 
 export const ADSchema = SchemaFactory.createForClass(AD);

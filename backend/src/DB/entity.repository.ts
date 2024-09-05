@@ -1,4 +1,10 @@
-import { Document, FilterQuery, Model, UpdateQuery } from 'mongoose';
+import {
+  Document,
+  FilterQuery,
+  Model,
+  UpdateQuery,
+  UpdateWriteOpResult,
+} from 'mongoose';
 
 export abstract class EntityRepository<T extends Document> {
   constructor(protected readonly entityModel: Model<T>) {}
@@ -48,5 +54,14 @@ export abstract class EntityRepository<T extends Document> {
       .deleteOne(enitityFilterQuery)
       .exec();
     return deletedCount > 0;
+  }
+
+  async updateMany(
+    enitityFilterQuery: FilterQuery<T>,
+    updateQuery: UpdateQuery<T>,
+  ): Promise<UpdateWriteOpResult> {
+    return this.entityModel
+      .updateMany(enitityFilterQuery, updateQuery, { new: true })
+      .exec();
   }
 }

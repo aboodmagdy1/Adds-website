@@ -32,6 +32,9 @@ export class User {
 
   @Prop({ default: false })
   isApproved: boolean;
+
+  @Prop({ sparse: true })
+  stripeCustomerId: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
