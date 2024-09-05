@@ -78,6 +78,7 @@ export class StripeService {
         await this.handleSubscriptionEnd(
           event.data.object as Stripe.Subscription,
         );
+        break;
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
