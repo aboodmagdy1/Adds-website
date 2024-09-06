@@ -2,6 +2,7 @@ import {
   Document,
   FilterQuery,
   Model,
+  PopulateOptions,
   UpdateQuery,
   UpdateWriteOpResult,
 } from 'mongoose';
@@ -9,16 +10,33 @@ import {
 export abstract class EntityRepository<T extends Document> {
   constructor(protected readonly entityModel: Model<T>) {}
 
+  // Helper function to normalize populate options
+  // if a string is passed convert it to population optino {path: '...'}
+  private normalizePopulate(
+    populateOption?: string | PopulateOptions | (string | PopulateOptions)[],
+  ): PopulateOptions | (string | PopulateOptions)[] | undefined {
+    if (typeof populateOption === 'string') {
+      return { path: populateOption }; // Convert string to PopulateOptions
+    }
+    return populateOption;
+  }
+
   async findOne(
     entityQueryFilter: FilterQuery<T>,
     projection?: Record<string, unknown>,
+    populationOption?: PopulateOptions | string | (PopulateOptions | string)[],
   ): Promise<T | null> {
-    return this.entityModel
-      .findOne(entityQueryFilter, {
-        __v: 0,
-        ...projection,
-      })
-      .exec();
+    const query = this.entityModel.findOne(entityQueryFilter, {
+      __v: 0,
+      ...projection,
+    });
+    const normalizedPopulate = this.normalizePopulate(populationOption);
+
+    if (normalizedPopulate) {
+      query.populate(normalizedPopulate);
+    }
+
+    return query.exec();
   }
 
   async find(

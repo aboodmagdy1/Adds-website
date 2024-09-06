@@ -61,7 +61,10 @@ export class AdService {
   }
 
   async getAd(filter: FilterQuery<ADDocument>) {
-    const ad = await this.adRepository.findOne(filter);
+    const ad = await this.adRepository.findOne(filter, null, {
+      path: 'owner',
+      select: 'email phone username -_id',
+    });
     if (ad === null) {
       throw new BadRequestException(`Ad not found`);
     } else {
@@ -139,14 +142,19 @@ export class AdService {
     }
   }
 
-  async disableAdsForUser(userId: string) {
+  // disable or enable
+  async updateAdsForUser(
+    userId: string,
+    approve: boolean,
+    subscriptionExpired: boolean,
+  ) {
     await this.adRepository.updateMany(
       {
         owner: userId,
       },
       {
-        isApproved: false,
-        ownerSubscriptionExpired: true,
+        isApproved: approve,
+        ownerSubscriptionExpired: subscriptionExpired,
       },
     );
   }
