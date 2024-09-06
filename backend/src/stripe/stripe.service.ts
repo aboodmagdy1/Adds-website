@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { waitForDebugger } from 'inspector';
 import { AdService } from 'src/ad/ad.service';
@@ -16,6 +17,7 @@ export class StripeService {
     private userService: UsersService,
     private emailService: EmailService,
     private adService: AdService,
+    private configService: ConfigService,
   ) {
     this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: '2024-06-20',
@@ -43,7 +45,7 @@ export class StripeService {
       mode: 'subscription',
       line_items: [
         {
-          price: 'price_1Prby4B7xuh8j3Y0teHGL0Z5',
+          price: this.configService.getOrThrow<string>('SUBSCRIPTION_PRICE_ID'),
           quantity: 1,
         },
       ],
@@ -91,6 +93,10 @@ export class StripeService {
       { email: invoice.customer_email },
       { isApproved: true, role: Role.Owner },
     );
+
+    // upadate the adds of the owner if exist before
+    await this.adService.updateAdsForUser(user.id, true, false);
+
     // TODO:send email notification to owner
     const emailParams: EmailParams = {
       recipientMail: user.email,
@@ -114,8 +120,8 @@ export class StripeService {
     user.role = Role.Guest;
     await user.save();
 
-    // 2) diasble all ads fo this user
-    await this.adService.disableAdsForUser(user.id);
+    // 2) diasble all ads fo this user         (approve , expired)
+    await this.adService.updateAdsForUser(user.id, false, true);
 
     //3) send email to owner
     const emailParams: EmailParams = {
